@@ -50,7 +50,7 @@ class Num4():
         means, variance = Num4._fit(X, y)
         l = len(X[:, 0])
         d = len(X[0, :])
-        c = len(classes)
+        c = 3
         pxc = np.zeros((l, c))
         for j in range(0, c):
             for i in range(0, l):
@@ -61,14 +61,21 @@ class Num4():
                 coef = ((2 * np.pi) ** (0.5 * d)) * np.sqrt(var)
                 pxc[i, j] = ex * (1 / coef)
 
-                # classe = np.unique(y)
-                # for group in classe:
-                #   Xg = X[y == group, :]
-
         priors = np.array([1 / 3, 1 / 3, 1 / 3])
+        deno = np.zeros(l)
+        for i in range(0, l):
+            den = (priors[0] * pxc[i, 0]) + (priors[1] * pxc[i, 1]) + (priors[2] * pxc[i, 2])
+            deno[i] = den
 
-        for j in range(0, c):
-            for i in range(0, l):
-                pcx[i, j] = priors(j) * pxc[i, j]
+        pcx = np.zeros((l, c))
+        for i in range(0, l):
+            for j in range(0, c):
+                p = priors[j] * pxc[i, j]
+                pcx[i, j] = p / deno[i]
 
-        return pcx, priors
+        return pcx
+
+
+
+pcx = Num4._predictproba(X, y)
+
