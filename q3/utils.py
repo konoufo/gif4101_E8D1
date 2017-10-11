@@ -13,11 +13,12 @@ class Traceur:
     y = iris.target
     feature_names = ('Longueur des sépales', 'Largeur des sépales', 'Longueur des pétales', 'Largeur des pétales')
     # selection de couleurs
-    cmap_light = ListedColormap(['#FFFFAA', '#AAAAFF', '#FFAAAA'])
-    cmap_bold = ListedColormap(['#FFFF00', '#0000FF', '#FF0000'])
+    cmap_light = ListedColormap(['#FFFFAA', '#AAAAFF', '#FFAAAA', '#008000'])
+    cmap_bold = ListedColormap(['#FFFF00', '#0000FF', '#FF0000', ])
 
-    def __init__(self, fig_index=1):
+    def __init__(self, fig_index=1, avec_rejet=False):
         self.index = fig_index
+        self.avec_rejet = avec_rejet
 
     def mesh(self, x1, x2, h=.01):
         """Crée un quadrillage sur les 2 dimensions fournies
@@ -39,7 +40,11 @@ class Traceur:
         X = self.X
         data = np.matrix([X[:, x1], X[:, x2]])
         data = np.matrix.transpose(data)
-        return clf().fit(data, self.y)
+        try:
+            clf = clf()
+        except TypeError:
+            clf = clf
+        return clf.fit(data, self.y)
 
     def generate_scatter(self, x1, x2):
         X = self.X
@@ -47,10 +52,9 @@ class Traceur:
         for target in np.unique(self.y):
             plt.scatter(X[self.y == target, x1], X[self.y == target, x2], c=self.cmap_bold.colors[target], edgecolor='k',
                         label=target_names[target])
-            # plt.scatter(X[50:99, x1], X[50:99, x2], c='#0000FF', edgecolor='k',
-            #             label=target_names[1])
-            # plt.scatter(X[100:149, x1], X[100:149, x2], c='#FF0000', edgecolor='k',
-            #             label=target_names[2])
+        if self.avec_rejet:
+            nans = np.full_like(X[:,0], np.nan, dtype=np.double)
+            plt.scatter(nans, nans, c='#008000', edgecolor='k', label='rejet')
 
     def tracer(self, clf, x1, x2, subplot=0, loc=4):
         clf = self.fit(clf, x1, x2)
@@ -59,7 +63,8 @@ class Traceur:
 
         plt.figure(self.index, figsize=(8, 6))
         plt.subplot(220 + subplot)
-        plt.pcolormesh(xx, yy, prediction_map, cmap=self.cmap_light)
+        cmap = np.array(self.cmap_light.colors)[np.unique(prediction_map)]
+        plt.pcolormesh(xx, yy, prediction_map, cmap=ListedColormap(list(cmap)))
         # Mise en graphique des points d'entrainement
         self.generate_scatter(x1, x2)
         plt.xlabel(self.feature_names[x1])
@@ -97,6 +102,9 @@ class Testeur:
         self.clfactory = clfactory
 
     def compute_error(self, clfactory=None):
-        clf = (clfactory or self.clfactory)()
+        try:
+            clf = (clfactory or self.clfactory)()
+        except TypeError:
+            clf = clfactory or self.clfactory
         clf.fit(self.X, self.y)
         return 1 - metrics.accuracy_score(clf.predict(self.X), self.y)
