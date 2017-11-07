@@ -16,7 +16,7 @@ class SelAvant:
 
     
     def fit(self, X, y):
-        
+
         X, y = check_X_y(X, y)
         # Initialisation
         
@@ -94,3 +94,31 @@ class SelAvant:
          
               
           return X[:, mask[:]]
+      
+from sklearn.svm import LinearSVC
+from sklearn.model_selection import train_test_split
+
+
+##### Importer les données du problemes  ############################
+features = open("features.txt","r")
+
+
+X = np.loadtxt("data.txt", delimiter=',')
+y = np.loadtxt("target.txt", delimiter=',')
+features1 = features.read().split()
+
+#### partition ######
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, stratify =y, test_size=0.5, random_state=42)
+
+######## question 3d ##############
+model = LinearSVC()
+SLA = SelAvant(model,10,step=1)
+varselect = SLA.fit(X_train,y_train).get_support(indices=True)
+xtrain_sla = SLA.transform(X_train)
+xtest_sla = SLA.transform(X_test)
+wordsla = [features1[x] for x in varselect]
+score_sla = model.fit(xtrain_sla,y_train).score(xtest_sla,y_test)
+print('Le score sélection avant séquentielle est:')
+print(score_sla)
+print(wordsla)
