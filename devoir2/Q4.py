@@ -318,3 +318,4 @@ for i in range(0,len(prediction_pca)):
     if prediction_pca[i] != label[i]:
         erreur.append(1)
 1 - float(sum(erreur))/float(len(label))
+### Recommit
