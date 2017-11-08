@@ -181,13 +181,38 @@ plt.title('Projection du jeu de donnée IRIS dans ses deux premièrs axes LDA')
 
 plt.show()
 
-X = datasets.load_iris()
 
 nciris = NearestCentroid()
 V = nciris.fit(Z, X.target)
 
-# Erreur de classement
-1 - sum(abs(V.predict(Z) - X.target))/V.shape
+# e) Taux de classement
+X = datasets.load_iris()
+# plus proche moyenne
+nciris = NearestCentroid()
+V = nciris.fit(Z, X.target)
+# LDA
+erreur = []
+prediction_lda = list(V.predict(Z))
+label = list(X.target)
+for i in range(0,len(prediction_lda)):
+    if prediction_lda[i] != label[i]:
+        erreur.append(1)
+1 - float(sum(erreur))/float(len(label))
+
+# PCA
+pca = PCA(n_components=2)
+pca_iris = pca.fit(X_S)
+X_h  = pca_iris.transform(X_S)
+nciris = NearestCentroid()
+V = nciris.fit(X_h, X.target)
+erreur = []
+prediction_pca = list(V.predict(X_h))
+label = list(X.target)
+for i in range(0,len(prediction_pca)):
+    if prediction_pca[i] != label[i]:
+        erreur.append(1)
+1 - float(sum(erreur))/float(len(label))
+
 
 # (DIGITS)
 # Importer les données
@@ -208,12 +233,39 @@ d2 = list(Z[:,1])
 plt.plot(d1,d2, 'ro')
 plt.xlabel('Axe 1')
 plt.ylabel('Axe 2')
-plt.title('Projection du jeu de donnée DIGITS dans ses deux premièrs axes LDA')
+plt.title('Projection du jeu de donnée DIGITS dans ses deux premiers axes LDA')
 
 plt.show()
+# e) Taux de classement
+X = datasets.load_digits()
+# plus proche moyenne
+ncdigits = NearestCentroid()
+V = ncdigits.fit(Z, X.target)
+# LDA
+erreur = []
+prediction_lda = list(V.predict(Z))
+label = list(X.target)
+for i in range(0,len(prediction_lda)):
+    if prediction_lda[i] != label[i]:
+        erreur.append(1)
+
+1 - float(sum(erreur))/float(len(label))
+# PCA
+pca = PCA(n_components=2)
+pca_digit = pca.fit(X_S)
+X_h  = pca_digit.transform(X_S)
+ncdigits = NearestCentroid()
+V = ncdigits.fit(X_h, X.target)
+erreur = []
+prediction_pca = list(V.predict(X_h))
+label = list(X.target)
+for i in range(0,len(prediction_pca)):
+    if prediction_pca[i] != label[i]:
+        erreur.append(1)
+1 - float(sum(erreur))/float(len(label))
 
 
-# Erreur de classement
+
 
 # (OLIVETTI)
 # Importer les données
@@ -239,4 +291,30 @@ plt.title('Projection du jeu de donnée OLIVETTI dans ses deux premièrs axes LD
 
 plt.show()
 
-# Erreur de classement
+# e) Taux de classement
+X = datasets.fetch_olivetti_faces()
+# plus proche moyenne
+ncolivetti = NearestCentroid()
+V = ncolivetti.fit(Z, X.target)
+# LDA
+erreur = []
+prediction_lda = list(V.predict(Z))
+label = list(X.target)
+for i in range(0,len(prediction_lda)):
+    if prediction_lda[i] != label[i]:
+        erreur.append(1)
+
+1 - float(sum(erreur))/float(len(label))
+# PCA
+pca = PCA(n_components=2)
+pca_olivetti = pca.fit(X_S)
+X_h  = pca_olivetti.transform(X_S)
+ncolivetti = NearestCentroid()
+V = ncolivetti.fit(X_h, X.target)
+erreur = []
+prediction_pca = list(V.predict(X_h))
+label = list(X.target)
+for i in range(0,len(prediction_pca)):
+    if prediction_pca[i] != label[i]:
+        erreur.append(1)
+1 - float(sum(erreur))/float(len(label))
