@@ -13,18 +13,22 @@ class EM:
         pr (ndarray): (n_composants, n_dim) matrice des parametres de loi de Bernoulli  (x_i|G_j) ~ B(p_j,i)
         posteriors (ndarray): (n_samples, n_composants) matrice des probabilites a posteriori P(G_j|x)
     """
-    def __init__(self, X, n_clusters=4):
-        self.initialize(X, n_clusters)
-
-    def initialize(self, X, n_clusters):
-        self.X = X
-        self.n_samples, self.n_dim = X.shape[0], X.shape[1]
+    def __init__(self, X=None, n_clusters=4):
         self.n_composants = n_clusters
+        if X is not None:
+            self.initialize(X)
+
+    def initialize(self, X, n_clusters=None):
+        self.X = np.array(X)
+        self.n_samples, self.n_dim = X.shape[0], X.shape[1]
+        if n_clusters is not None:
+            self.n_composants = n_clusters
         # vecteur des P(G_j)
-        self.pi = np.ones([1, n_clusters], dtype=np.float64) / n_clusters
+        self.pi = np.ones([1, self.n_composants], dtype=np.float64) / self.n_composants
         # matrice des paramètres de loi de Bernoulli.
         # L'élément (j,i) correspond au paramètre de loi (x_i|G_j) ~ B(p_j,i)
-        self.pr = np.random.rand(n_clusters, self.n_dim)
+        self.pr = np.random.rand(self.n_composants, self.n_dim)
+        self._is_fitted = False
 
 
     def _m_step(self):
@@ -51,7 +55,13 @@ class EM:
             posteriors[t, :] = np.divide(numerator, denominator)
 
 
-    def run(self):
+    def fit(self, X=None, n_clusters=None):
+        if X is not None:
+            self.initialize(X, n_clusters)
+        if self.X is None:
+            raise AssertionError('Vous devez passer le jeu de donnees en argument de fit() ou dans le constructeur.')
+        if self.n_composants is None:
+            raise AssertionError('Vous devez passer le nb de clusters en argument de fit() ou dans le constructeur.')
         epsilon = 1.0
         while epsilon > 1e-6:
             pi_initial = np.copy(self.pi)
@@ -59,4 +69,27 @@ class EM:
             self._e_step()
             self._m_step()
             epsilon = np.min(np.concatenate((np.abs(self.pi - pi_initial).T, np.abs(self.pr - pr_initial)), axis=1))
-        return self.pi, self.pr
+        self._is_fitted = True
+        return self
+
+    def _should_fit(self, X=None, n_clusters=None):
+        return X is not None or n_clusters is not None or not self._is_fitted
+
+    def predict(self, X=None, n_clusters=None):
+        if self._should_fit(X, n_clusters):
+            return self.fit(X, n_clusters).predict()
+        return np.argmax(self.posteriors, axis=1)
+
+    def score(self, X=None, n_clusters=None):
+        """ Calcule et retourne le maximum de l'espérance de vraisemblance de la paramétrisation.
+        On utilise les propriétés mathématiques de multiplication de matrice d'une part,
+        et les multiplications element par element de Numpy d'autre part, pour raccourcir le calcul des sommes.
+        """
+        if self._should_fit(X, n_clusters):
+            return self.fit(X, n_clusters).score()
+        X = self.X
+        # pour rendre le calcul plus simple grâce au produit matriciel P -> (n_dim, n_composants)
+        P = self.pr.T
+        somme_interne =  np.add(self.pi, X * np.log(P) + (1 - X) * np.log(1 - P))
+        phi = np.sum(np.multiply(self.posteriors, somme_interne))
+        return phi

@@ -4,7 +4,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as qda
 from sklearn.naive_bayes import GaussianNB as gnb
 from sklearn.neighbors import NearestCentroid as nc
 
-from q3.utils import Testeur, Traceur
+from .utils import Testeur, Traceur
 
 
 def compute_errors_for_classifiers(classifiers=(qda, lda, gnb, nc)):
