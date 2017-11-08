@@ -46,17 +46,22 @@ class Question2b:
         mutual_gene = np.empty(len(kgroups))
         v_gene = np.empty(len(kgroups))
 
-        for i in kgroups:           #procede a Kmeans pour different cluster
+        # Execute Kmeans pour differents nombres de groupes/clusters
+        for i in kgroups:
             kmeans = KMeans(n_clusters=i, init = 'k-means++').fit(data1)
-            lab = kmeans.labels_
+            groups_labels = kmeans.labels_
             labk_eti = np.empty([0,2])
             for j in range(0,i):  #évalue et assigne la classe pour chaque groupe parmis les K groupes
-                labels = np.append(lab,target1)
-                labels = np.reshape(labels,(2,4327)).T
-                labk = labels[labels[:,0]==j, :]
-                b = np.asarray(Counter(labk[:,1]).most_common(1))
-                labk[:,0] = b[:,0]
-                labk_eti = np.concatenate([labk_eti,labk])
+                labels = np.append(groups_labels, target1)
+                labels = np.reshape(labels, (2, 4327)).T
+                labk = labels[labels[:, 0] == j, :]
+                # b -> [[e, n]]
+                # e : l'etiquette la plus frequente dans le groupe G_j actuel
+                # n : le nombre d'occurences
+                b = np.asarray(Counter(labk[:, 1]).most_common(1))
+                # grace au broadcasting, on assigne l'etiquette aux elements du groupe G_j
+                labk[:, 0] = b[:, 0]
+                labk_eti = np.concatenate([labk_eti, labk])
             rand_score = rand(labk_eti[:,0],labk_eti[:,1])
             mutual_score = mutual(labk_eti[:,0],labk_eti[:,1])
             v_score = vscore(labk_eti[:,0],labk_eti[:,1])
@@ -72,7 +77,7 @@ class Question2b:
         plt.legend(loc=2,
              fontsize=8)
         plt.xlabel('Nombres de groupes')
-        plt.ylabel('Performance')
+        plt.ylabel('Performance de K-means')
         plt.show()
         
         
