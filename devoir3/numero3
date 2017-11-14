@@ -1,0 +1,88 @@
+import numpy as np
+from sklearn import datasets
+from collections import Counter
+
+##########  Edition de Wilson  ###################
+
+def edit_wilson(x,r,k):
+    
+    k = k+1
+    dis = []
+    dista = np.empty(x.shape[0])
+    distanc = np.empty(x.shape[0])
+    classe = np.empty(k)
+    selection = np.empty(x.shape[0])
+    c = np.arange(X.shape[0])
+    np.random.shuffle(c)
+    for i in c:
+        for j in c:
+            dis = np.linalg.norm(x[i]-x[j])
+            dista[j] = dis
+            distanc = dista
+        nearest = np.argsort(distanc)[:k] 
+        nearest = np.delete(nearest,0)
+        for e in range(0,nearest.shape[0]):
+            cla = r[nearest[e]]
+            classe[e] = cla
+        count = Counter(classe).most_common(1)  
+        count = np.asarray(count)
+        if r[i] == count[:,0]:
+            selection[i] = 1
+        else:
+            selection[i] = 0
+            c = np.delete(c,c[:]==i)
+            
+        
+    i = np.arange(x.shape[0])
+    i = np.concatenate([i,selection])
+    i = np.reshape(i,(2,x.shape[0])).T
+    i = i[i[:,1]==1,0]
+    return i
+
+
+############  Condensation de Hart  #####################
+
+def condense_hart(x,r):
+    
+    k = 1+1
+    dis = []
+    dista = np.empty(x.shape[0])
+    distanc = np.empty(x.shape[0])
+    classe = np.empty(k)
+    selection = np.empty(x.shape[0])
+    c = np.arange(x.shape[0])
+    np.random.shuffle(c)
+    for i in c:
+        for j in c:
+            dis = np.linalg.norm(x[i]-x[j])
+            dista[j] = dis
+            distanc = dista
+        nearest = np.argsort(distanc)[:k] 
+        nearest = np.delete(nearest,0)
+        if r[i] == r[nearest]: 
+            selection[i] = 1
+            c = np.delete(c,c[:]==i)
+        else:
+            selection[i] = 0
+           
+        
+    ind = np.arange(x.shape[0])
+    ind = np.concatenate([i,selection])
+    ind = np.reshape(i,(2,x.shape[0])).T
+    ind = ind[ind[:,1]==0,0]
+    return ind
+
+
+############## Numero 3c - test sur iris de Fisher  ###########################
+
+##########Gestion des données ##########################
+iris = datasets.load_iris()
+X = iris.data
+y = iris.target
+target_name = iris.target_names[:3]
+
+## normalisation
+X1 = np.divide((X - X.min()),(X.max()-X.min()))
+
+from sklearn.model_selection import StratifiedKFold
+skf = StratifiedKFold(n_splits=3,shuffle = True)
