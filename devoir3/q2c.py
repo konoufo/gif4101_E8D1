@@ -24,8 +24,9 @@ if __name__ == '__main__':
     testX = X[random_slice[50:], :]
     testR = y[random_slice[50:]]
     sgd.fit(trainX, trainR)
-    print('Score 1: {:.3f}'.format(sgd.score(testX, testR)))
-    print('Score 1: {:.3f}'.format(sgd.score(testX, testR)))
+    gd.fit(trainX, trainR)
+    print('Score (scikit): {:.3f}'.format(sgd.score(testX, testR)))
+    print('Score 1 (us): {:.3f}'.format(gd.score(testX, testR)))
     # X, y = make_classification(n_samples=100, n_features=2, n_redundant=0, n_informative=2, n_clusters_per_class=1,
     #                            n_classes=3)
     # y = convert_target(y)
