@@ -87,11 +87,19 @@ y = iris.target
 target_name = iris.target_names[:3]
 
 ## normalisation
-X1 = np.divide((X - X.min()), (X.max()-X.min()))
+#X1 = np.divide((X - X.min()), (X.max()-X.min()))
+
+mini = X.min(axis=0)
+maxi = X.max(axis=0)
+
+X[:,0] = np.divide((X[:,0] - mini[0]), (maxi[0]-mini[0]))
+X[:,1] = np.divide((X[:,1] - mini[1]), (maxi[1]-mini[1]))
+X[:,2] = np.divide((X[:,2] - mini[2]), (maxi[2]-mini[2]))
+X[:,3] = np.divide((X[:,3] - mini[3]), (maxi[3]-mini[3]))
 
 
    
-x1, x3, y1, y3 = train_test_split(X1,y,test_size=0.33,stratify=y)
+x1, x3, y1, y3 = train_test_split(X,y,test_size=0.33,stratify=y)
 
 x1, x2, y1, y2 = train_test_split(x1,y1,test_size=0.5,stratify=y1)
 
@@ -191,6 +199,8 @@ for i in kn:
     perfhart[2,e] = neigh.fit(p3a,py3a).score(test_x3,test_y3)
     e = e + 1
     
+    z1=z
+    
 #########  ÉVALUATION hart + wilson ###########################################
 tselcomb = np.zeros((3,5))
 perfcomb = np.zeros((3,5))
@@ -207,8 +217,8 @@ for i in kn:
         k = z.shape[0]
     else:
         k = i
-    p1a = p1[z]
-    py1a = py1[z]
+    p1a = p1a[z]
+    py1a = py1a[z]
     neigh = KNeighborsClassifier(n_neighbors = k)
     perfcomb[0,e] = neigh.fit(p1a,py1a).score(test_x1,test_y1)
 
@@ -221,8 +231,8 @@ for i in kn:
         k = z.shape[0]
     else:
         k = i
-    p2a = p2[z]
-    py2a = py2[z]
+    p2a = p2a[z]
+    py2a = py2a[z]
     neigh = KNeighborsClassifier(n_neighbors =k)
     perfcomb[1,e] = neigh.fit(p2a,py2a).score(test_x2,test_y2)
 
@@ -235,8 +245,8 @@ for i in kn:
         k = z.shape[0]
     else:
         k = i
-    p3a = p3[z]
-    py3a = py3[z]
+    p3a = p3a[z]
+    py3a = py3a[z]
     neigh = KNeighborsClassifier(n_neighbors = k)
     perfcomb[2,e] = neigh.fit(p3a,py3a).score(test_x3,test_y3)
     e = e + 1
@@ -265,9 +275,9 @@ print(1-perfcomb_mean)
 plt.plot(kn, perf_mean,'r--',label = 'Wilson' )        
 plt.plot(kn, perfhart_mean,'g--',label = 'Hart' ) 
 plt.plot(kn, perfcomb_mean,'b--',label = 'combiné' )  
-plt.legend(loc=2,
+plt.legend(loc=1,
      fontsize=8)
 plt.xlabel('Nombres de k-voisns')
 plt.ylabel('Performance')
-plt.show()            
+plt.show()       
         
