@@ -35,7 +35,7 @@ class Traceur:
 
     def fit(self, clf, x1, x2):
         """Entraine avec le classifieur fourni
-        clf (type): classe de classifieur
+        clf (type): objet `class` du type de classifieur
         """
         X = self.X
         data = np.matrix([X[:, x1], X[:, x2]])

@@ -4,7 +4,7 @@ from sklearn.utils import check_X_y
 
 
 class GradientDescent:
-    """Algorithme de descente de gradient
+    """Discriminant linéaire entraîné par algorithme de descente de gradient
     taux (float): taux d'apprentissage
     weights (ndarray): poids pour le dioscriminant linéaire
     """
@@ -35,11 +35,12 @@ class GradientDescent:
                 # mise à jour de w_0
                 weights[-1] += self.taux * np.sum(eX, axis=0)
 
-                print('iter: #{}; normsq: {}; error_sum: {}'.format(it, norms_sq, np.sum(dErr)))
+                # print('iter: #{}; normsq: {}; error_sum: {}'.format(it, norms_sq, np.sum(dErr)))
             delta = np.mean(np.abs(weights_old - weights))
             it += 1
-        print('\nFinished after {} iterations. err_moy: {}.'.format(it, delta))
+        print('Finished after {} iterations.'.format(it))
         self.weights = weights
+        return self
 
     def _is_fitted(self):
         return self.weights is not None
@@ -51,9 +52,15 @@ class GradientDescent:
         return np.dot(X, weights[:-1]) + weights[-1]
 
     def predict(self, X):
+        pred = self._hfunc(X)
+        pred[pred >= 0] = 0
+        pred[pred < 0] = 1
+        return np.array(pred, dtype=np.int32)
+
+    def hfunc(self, X):
         return self._hfunc(X)
 
     def score(self, X, r):
         X, r = check_X_y(X, r)
-        check = self._hfunc(X) * r
-        return 1 - (X[check[:, 0] <= 0, :].shape[0] / r.shape[0])
+        pred = self.predict(X)
+        return (pred[:, 0] == r).sum() / pred.shape[0]
