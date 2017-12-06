@@ -55,7 +55,7 @@ def score(test,a):
     for i in range(0,len(test)-1):
         if predict(a, test[0][i]) == test[1][i]:
             s += 1
-    return s/len(test)
+    return s/len(test) # proportion de données bien classés
 
 # le jeu de donnes utilise
 train = ds.make_moons(n_samples=500, noise=0.3)
@@ -73,9 +73,9 @@ sd = 0.3 # l'ecart-type = 0.3
 # Trouver les parametres optimaux
 t = 1
 SS = []
-while(s > 0.1):
-    lam_p = lam + random.random[-1,1]*log(t) # On fait ociler le parametre lambda tranquillement dans le temps
-    sd_p = sd + random.random[-1,1]*log(t) # on fait ociler la variance du bb tranquillement dans le temps.
+while(s < 0.9):
+    lam_p = lam + random.random[-1,1]*log(t) # On fait ociller le parametre lambda tranquillement dans le temps
+    sd_p = sd + random.random[-1,1]*log(t) # on fait ociller la variance du bb tranquillement dans le temps.
     if sd > 0 & lam >= 0: # on s'assure que les deux parametres sont plus grand que 0
         lam = lam_p # si les conditions sont respectes, ont ajuste les params
         sd = sd_p
@@ -83,3 +83,4 @@ while(s > 0.1):
         SS.append((lam,sd,s))
         t += 1 # incrémente t
 
+param_finaux = fit()
