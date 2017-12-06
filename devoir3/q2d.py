@@ -3,9 +3,8 @@ from sklearn.datasets import load_iris, load_breast_cancer
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.linear_model import Perceptron, LogisticRegression
 
-from utils import Testeur
 from q2c import OneVSAll as GradientDescentMulti
-
+from utils import Testeur
 
 clfs = [GradientDescentMulti, LinearDiscriminantAnalysis, Perceptron, LogisticRegression]
 

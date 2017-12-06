@@ -1,6 +1,6 @@
+import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.datasets import make_classification
-import matplotlib.pyplot as plt
 
 from q2b import GradientDescent
 from utils import Traceur
