@@ -2,10 +2,10 @@ from scipy.optimize import fmin_l_bfgs_b
 from scipy.spatial import distance
 from sklearn import datasets as ds
 import numpy as np
-from math import exp
+from math import exp, log
 import random
 
-def gaussian_k(X,Y,sd=0.3):
+def gaussian_k(X,Y):
     # Retourne le noyau gaussien pour X et Y
     return exp(-(distance.euclidean(X,Y)**2)/(sd**2))
 
@@ -40,7 +40,7 @@ def grad(A_t):
     for i in range(1,len(R_y)):
 
 
-def fit(X):
+def fit():
     # renvoi les paramètres du modèle.
     y = fmin_l_bfgs_b(loss, x0=x, approx_grad=False,maxiter=3,fprime=grad)
     return y[0]
@@ -53,7 +53,7 @@ def score(test,a):
     # renvoie le taux de prédiction correct sur l'ensemble du jeu de données de validation
     s =  0 # succes
     for i in range(0,len(test)-1):
-        if discrim(a, test[0][i]) == test[1][i]:
+        if predict(a, test[0][i]) == test[1][i]:
             s += 1
     return s/len(test)
 
@@ -61,11 +61,25 @@ def score(test,a):
 train = ds.make_moons(n_samples=500, noise=0.3)
 X_t = train[0] # les variables du jeu d'entrainement
 R_t = train[1] # les etiquettes du jeu d'entrainement
-lam = 0.05 #lambda = 0.05
 x = np.random.random((1,len(R_t)+1)) # la valeur initiales des poids et de la constante (initialisé aléatoirement)
 
 # le jeu de validation
 test = ds.make_moons(n_samples=500, noise=0.3)
 
+lam = 0.05 #lambda = 0.05
+sd = 0.3 # l'ecart-type = 0.3
+
+
+# Trouver les parametres optimaux
+t = 1
+SS = []
 while(s > 0.1):
-    lam = lam
+    lam_p = lam + random.random[-1,1]*log(t) # On fait ociler le parametre lambda tranquillement dans le temps
+    sd_p = sd + random.random[-1,1]*log(t) # on fait ociler la variance du bb tranquillement dans le temps.
+    if sd > 0 & lam >= 0: # on s'assure que les deux parametres sont plus grand que 0
+        lam = lam_p # si les conditions sont respectes, ont ajuste les params
+        sd = sd_p
+        s = score(test, fit()) # on test le score et on retient les parametres dans SS.
+        SS.append((lam,sd,s))
+        t += 1 # incrémente t
+
