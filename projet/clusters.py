@@ -626,7 +626,10 @@ if __name__ == "__main__":
     # lAngle = find_long_axis_angle(parameters)
     
 # COMPUTE THE MEGAMATRIX
-    root = "/Users/Anthony/Documents/Images PDK/Pierre-Luc EXP4/"
+    from os.path import dirname, join, abspath
+    # the root is parent_folder_of_this_repo/projet/data
+    root = join(dirname(dirname(dirname(abspath(__file__)))), 'projet', 'data')
+    print('root folder: {}'.format(root))
     keepFormat = "*.tif"
 
     fileList, nameList = [],[]
@@ -699,7 +702,7 @@ if __name__ == "__main__":
                 numberOfNeighArea2[i]]
             )
 
-        filename = "/Users/Anthony/Desktop/parameters_STED640.csv"
+        filename = join(root, 'parameters_STED640.csv')
         file_exists = os.path.isfile(filename)
         with open(filename, "a") as csvfile:
             headers = ["ID","amp","x0","y0","sigx","sigy","theta",
@@ -711,7 +714,7 @@ if __name__ == "__main__":
             for rows in megaArray1:
                 writer.writerow(rows)
 
-        filename = "/Users/Anthony/Desktop/parameters_STED561.csv"
+        filename = join(root, "parameters_STED561.csv")
         file_exists = os.path.isfile(filename)
         with open(filename, "a") as csvfile:
             headers = ["ID","amp","x0","y0","sigx","sigy","theta",
