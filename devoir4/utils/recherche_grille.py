@@ -12,12 +12,13 @@ class RechercheGrille:
             best_hyparams (1d-array: int): position de la meilleur paire de paramètres dans `hyparams_combi`
             errors: erreur de validation pour chaque paire d'hyperparamètres testée.
     """
-    def __init__(self, X, y, hyparams_combi):
+    def __init__(self, X, y, hyparams_combi, use_score_fun=False):
         X, y = check_X_y(X, y)
         self.X_train, self.X_test, self.y_train, self.y_test = model_selection.train_test_split(X, y, train_size=0.5)
         self.hyparams_combi = hyparams_combi
         self.errors = []
         self.best_hyparams = None
+        self.use_score_fun = use_score_fun
 
     @staticmethod
     def generate_pairs(setA, setB):
@@ -30,5 +31,7 @@ class RechercheGrille:
 
     def _validate(self, clf):
         clf.fit(self.X_train, self.y_train)
+        if self.use_score_fun:
+            return 1 - clf.score(self.X_test, self.y_test)
         return 1 - metrics.accuracy_score(clf.predict(self.X_test), self.y_test)
 
