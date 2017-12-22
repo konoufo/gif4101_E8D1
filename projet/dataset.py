@@ -5,9 +5,7 @@ from six.moves import xrange
 
 
 class DataSet:
-    def __init__(self,
-                 X,
-                 seed=None):
+    def __init__(self, X, seed=None):
         """Construct a DataSet.
         Seed arg provides for convenient deterministic testing.
         """
@@ -20,13 +18,6 @@ class DataSet:
         #                     dtype)
         self.seed = seed1 if seed is None else seed2
         self._num_examples = X.shape[0]
-
-        # Convert shape from [num examples, rows, columns, depth]
-        # to [num examples, rows*columns] (assuming depth == 1)
-        # if reshape:
-        #     assert X.shape[3] == 1
-        #     X = X.reshape(X.shape[0],
-        #                   X.shape[1] * X.shape[2])
         self._X = X
         self._epochs_completed = 0
         self._index_in_epoch = 0

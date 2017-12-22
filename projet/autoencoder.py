@@ -92,7 +92,7 @@ def train(data, identifier=''):
                 f.write(data.seed)
                 f.write('\n')
         else:
-            with open(join(root, 'rnd_state_{}'.format(identifier)), 'wb') as f:
+            with open(join(root, 'autoencodeur_{}.state'.format(identifier)), 'wb') as f:
                 pickle.dump(np.random.get_state(), f)
         np.save('encoded_data_{}'.format(identifier), encoder_op.eval({X: data.X}))
 
